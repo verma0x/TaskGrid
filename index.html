@@ -1,204 +1,256 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>TaskGrid // Mobile</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>TaskGrid | To-Do List</title>
+  
+  <!-- PWA Meta Tags -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="TaskGrid">
+  
+  <!-- Fallback icon (replace with actual paths in production) -->
+  <link rel="apple-touch-icon" href="https://via.placeholder.com/192/0f172a/00f0ff?text=TG">
+
   <style>
-    /* Light Mode Variables (Default) */
+    /* ----------------------------------
+       CSS VARIABLES (THEMING & DESIGN)
+       ---------------------------------- */
     :root {
-      --bg-gradient: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
-      --card-bg: rgba(255, 255, 255, 0.85);
-      --card-border: rgba(255, 255, 255, 0.5);
-      --border: #cbd5e1;
-      --text: #0f172a;
+      /* Light Mode Palette */
+      --bg-gradient: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+      --glass-bg: rgba(255, 255, 255, 0.6);
+      --glass-border: rgba(255, 255, 255, 0.4);
+      --text-main: #0f172a;
       --text-muted: #64748b;
-      --input-bg: rgba(255, 255, 255, 0.9);
-      --accent-green: #10b981;
+      --input-bg: rgba(255, 255, 255, 0.8);
+      --input-border: rgba(15, 23, 42, 0.1);
+      --danger-bg: #ef4444;
+      --shadow-color: rgba(15, 23, 42, 0.1);
+      
+      /* Accents */
       --accent-cyan: #0ea5e9;
-      --accent-red: #ef4444;
-      --shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+      --accent-green: #10b981;
+      --accent-pink: #f43f5e;
     }
 
-    /* Dark Mode Variables */
     [data-theme="dark"] {
-      --bg-gradient: linear-gradient(135deg, #090d16 0%, #1a1625 100%);
-      --card-bg: rgba(17, 24, 39, 0.7);
-      --card-border: rgba(255, 255, 255, 0.05);
-      --border: #334155;
-      --text: #f8fafc;
+      /* Cyber-Developer Dark Mode Palette */
+      --bg-gradient: linear-gradient(135deg, #090d16 0%, #151025 100%);
+      --glass-bg: rgba(15, 23, 42, 0.5);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --text-main: #f8fafc;
       --text-muted: #94a3b8;
-      --input-bg: rgba(15, 23, 42, 0.8);
-      --accent-green: #00e676;
-      --accent-cyan: #00e5ff;
-      --accent-red: #ff3366;
-      --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      --input-bg: rgba(2, 6, 23, 0.6);
+      --input-border: rgba(255, 255, 255, 0.1);
+      --danger-bg: #e11d48;
+      --shadow-color: rgba(0, 0, 0, 0.5);
+      
+      /* Cyber Accents */
+      --accent-cyan: #00f0ff;
+      --accent-green: #00ff66;
+      --accent-pink: #ff007f;
     }
 
+    /* ----------------------------------
+       GLOBAL RESETS & BASE
+       ---------------------------------- */
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
 
     body {
       background: var(--bg-gradient);
       background-attachment: fixed;
-      color: var(--text);
+      color: var(--text-main);
+      min-height: 100vh;
       display: flex;
       justify-content: center;
-      min-height: 100vh;
-      padding: 20px 16px 80px 16px; /* Extra bottom padding for mobile scrolling */
+      padding: 24px 16px 80px 16px;
       transition: background 0.4s ease, color 0.4s ease;
+      overflow-x: hidden;
     }
 
-    .container {
+    /* ----------------------------------
+       LAYOUT & UTILITIES
+       ---------------------------------- */
+    .app-container {
       width: 100%;
       max-width: 500px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
     }
 
-    /* Header & Theme Toggle */
+    .glass {
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px var(--shadow-color);
+    }
+
+    /* 48px Minimum Touch Target */
+    button, input, select {
+      min-height: 48px;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    /* ----------------------------------
+       HEADER
+       ---------------------------------- */
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 24px;
-      padding-top: 10px;
-    }
-
-    .brand-area {
-      display: flex;
-      flex-direction: column;
+      margin-bottom: 8px;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 12px;
+    }
+
+    .brand h1 {
       font-size: 1.5rem;
       font-weight: 800;
       letter-spacing: -0.5px;
     }
 
-    .dot {
+    .neon-dot {
       width: 12px;
       height: 12px;
-      background: var(--accent-green);
+      background: var(--accent-cyan);
       border-radius: 50%;
-      box-shadow: 0 0 10px var(--accent-green);
+      box-shadow: 0 0 12px var(--accent-cyan);
     }
 
-    .subtitle {
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      margin-top: 2px;
-    }
-
-    .theme-btn {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      color: var(--text);
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
+    .theme-toggle {
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      font-size: 1.5rem;
+      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.2rem;
-      cursor: pointer;
-      backdrop-filter: blur(10px);
-      box-shadow: var(--shadow);
+      width: 48px;
+      border-radius: 50%;
       transition: transform 0.2s;
     }
-
-    .theme-btn:active {
-      transform: scale(0.95);
+    
+    .theme-toggle:active {
+      transform: scale(0.9);
     }
 
-    /* Glassmorphism Form Mobile Layout */
-    .input-box {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-radius: 16px;
+    /* ----------------------------------
+       PROGRESS BAR
+       ---------------------------------- */
+    .progress-panel {
+      padding: 16px;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text-muted);
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      background: var(--input-bg);
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid var(--input-border);
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--accent-cyan);
+      border-radius: 4px;
+      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 10px var(--accent-cyan);
+    }
+
+    /* ----------------------------------
+       TASK ENTRY FORM
+       ---------------------------------- */
+    .input-panel {
       padding: 16px;
       display: flex;
       flex-direction: column;
       gap: 12px;
-      margin-bottom: 24px;
-      box-shadow: var(--shadow);
     }
 
-    input[type="text"] {
+    .input-row {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+    }
+
+    input.task-input {
+      flex: 1;
       width: 100%;
       background: var(--input-bg);
-      border: 1px solid var(--border);
-      color: var(--text);
-      font-size: 1rem;
-      padding: 12px 16px;
-      border-radius: 10px;
-      outline: none;
+      border: 1px solid var(--input-border);
+      color: var(--text-main);
+      border-radius: 12px;
+      padding: 0 16px;
       transition: border-color 0.2s;
     }
 
-    input[type="text"]:focus {
+    input.task-input:focus {
       border-color: var(--accent-cyan);
     }
 
-    .form-row {
-      display: flex;
-      gap: 10px;
-    }
-
-    select {
-      flex: 1;
+    select.priority-select {
       background: var(--input-bg);
-      border: 1px solid var(--border);
-      color: var(--text);
-      border-radius: 10px;
+      border: 1px solid var(--input-border);
+      color: var(--text-main);
+      border-radius: 12px;
       padding: 0 12px;
-      font-size: 0.95rem;
-      outline: none;
-      height: 48px; /* Mobile touch target */
+      flex: 0.4;
+      appearance: none;
+      cursor: pointer;
     }
 
     button.btn-add {
-      flex: 1;
       background: var(--accent-green);
       color: #000;
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
       font-weight: 700;
-      font-size: 1rem;
-      height: 48px; /* Mobile touch target */
+      padding: 0 20px;
       cursor: pointer;
-      transition: opacity 0.2s, transform 0.1s;
+      flex: 0.3;
+      transition: opacity 0.2s;
     }
 
     button.btn-add:active {
-      transform: scale(0.98);
+      opacity: 0.8;
     }
 
-    /* Filters */
+    /* ----------------------------------
+       FILTERS
+       ---------------------------------- */
     .filters {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-      background: var(--card-bg);
       padding: 6px;
-      border-radius: 12px;
-      backdrop-filter: blur(10px);
-      box-shadow: var(--shadow);
-    }
-
-    .filter-group {
-      display: flex;
-      gap: 4px;
-      flex: 1;
     }
 
     .filter-btn {
@@ -206,269 +258,479 @@
       background: transparent;
       border: none;
       color: var(--text-muted);
-      cursor: pointer;
-      padding: 10px 0;
-      border-radius: 8px;
-      font-size: 0.85rem;
+      border-radius: 10px;
       font-weight: 600;
+      cursor: pointer;
       transition: all 0.2s;
     }
 
     .filter-btn.active {
       background: var(--input-bg);
-      color: var(--text);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      color: var(--text-main);
+      box-shadow: 0 2px 8px var(--shadow-color);
     }
 
-    /* Task List */
+    /* ----------------------------------
+       TASK LIST & SWIPE-TO-DELETE
+       ---------------------------------- */
     .task-list {
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
     }
 
     .task-item {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      backdrop-filter: blur(10px);
-      border-radius: 14px;
+      position: relative;
+      border-radius: 16px;
+      background: var(--danger-bg);
+      overflow: hidden;
+      will-change: transform;
+    }
+
+    /* The red background revealed on swipe */
+    .task-delete-bg {
+      position: absolute;
+      top: 0; right: 0; bottom: 0; left: 0;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding-right: 24px;
+      color: #fff;
+      font-weight: bold;
+      z-index: 1;
+    }
+
+    /* The actual task card that gets dragged */
+    .task-foreground {
+      position: relative;
+      z-index: 2;
       padding: 16px;
       display: flex;
-      flex-direction: column;
+      align-items: center;
       gap: 12px;
-      box-shadow: var(--shadow);
-      transition: all 0.3s ease;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
     }
 
-    .task-item.completed {
-      opacity: 0.6;
+    .task-foreground.completed {
+      opacity: 0.5;
     }
 
-    .task-content {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      width: 100%;
-    }
-
-    input[type="checkbox"] {
-      width: 22px;
-      height: 22px;
-      margin-top: 2px;
-      accent-color: var(--accent-green);
+    /* Custom Checkbox */
+    .custom-checkbox {
+      appearance: none;
+      min-height: 24px !important;
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--text-muted);
+      border-radius: 6px;
       cursor: pointer;
+      position: relative;
+      transition: all 0.2s;
       flex-shrink: 0;
     }
 
-    .task-title {
-      font-size: 1.05rem;
-      line-height: 1.4;
-      word-break: break-word;
-      flex: 1;
+    .custom-checkbox:checked {
+      background: var(--accent-cyan);
+      border-color: var(--accent-cyan);
     }
 
-    .task-item.completed .task-title {
+    .custom-checkbox:checked::after {
+      content: '✔';
+      position: absolute;
+      color: #000;
+      font-size: 14px;
+      font-weight: 900;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    /* Task Title & Inline Edit */
+    .task-title {
+      flex: 1;
+      font-size: 1rem;
+      word-break: break-word;
+      user-select: none; /* Prevents text selection on double-tap */
+      line-height: 1.4;
+      cursor: text;
+    }
+
+    .completed .task-title {
       text-decoration: line-through;
     }
 
-    .task-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-      padding-left: 34px; /* Aligns with text past checkbox */
+    .inline-edit-input {
+      flex: 1;
+      background: var(--input-bg);
+      border: 1px solid var(--accent-cyan);
+      color: var(--text-main);
+      border-radius: 8px;
+      padding: 8px;
+      min-height: auto; /* override global */
+      height: auto;
     }
 
-    .priority-badge {
-      font-size: 0.75rem;
-      font-weight: 700;
+    /* Badges */
+    .badge {
+      font-size: 0.7rem;
+      font-weight: 800;
       padding: 4px 10px;
-      border-radius: 6px;
+      border-radius: 8px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
 
-    .priority-high { background: rgba(239, 68, 68, 0.15); color: var(--accent-red); }
-    .priority-medium { background: rgba(14, 165, 233, 0.15); color: var(--accent-cyan); }
-    .priority-low { background: rgba(100, 116, 139, 0.15); color: var(--text-muted); }
+    .badge-high { background: rgba(225, 29, 72, 0.15); color: var(--accent-pink); border: 1px solid rgba(225, 29, 72, 0.3); }
+    .badge-medium { background: rgba(14, 165, 233, 0.15); color: var(--accent-cyan); border: 1px solid rgba(14, 165, 233, 0.3); }
+    .badge-low { background: rgba(100, 116, 139, 0.15); color: var(--text-muted); border: 1px solid rgba(100, 116, 139, 0.3); }
 
-    .btn-delete {
-      background: rgba(239, 68, 68, 0.1);
+    /* Desktop fallback delete button */
+    .btn-delete-desktop {
+      background: transparent;
       border: none;
-      color: var(--accent-red);
+      color: var(--text-muted);
+      font-size: 1.2rem;
       cursor: pointer;
-      font-size: 0.9rem;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-weight: 600;
+      min-height: 24px !important;
+      padding: 8px;
+      margin-right: -8px;
     }
+    
+    .btn-delete-desktop:hover { color: var(--accent-pink); }
 
     .empty-state {
       text-align: center;
-      padding: 40px 20px;
+      padding: 40px;
       color: var(--text-muted);
       font-size: 0.95rem;
-      background: var(--card-bg);
-      border-radius: 14px;
-      backdrop-filter: blur(10px);
+    }
+
+    /* Utility Class for Animations */
+    .fade-out {
+      opacity: 0;
+      transform: scale(0.95);
     }
   </style>
 </head>
 <body>
-  <div class="container">
+
+  <div class="app-container">
+    
+    <!-- Header -->
     <header>
-      <div class="brand-area">
-        <div class="brand">
-          <div class="dot"></div>
-          <span>TaskGrid</span>
-        </div>
-        <div class="subtitle">Mobile Execution Pipeline</div>
+      <div class="brand">
+        <div class="neon-dot"></div>
+        <h1>TaskGrid</h1>
       </div>
-      <button class="theme-btn" id="theme-toggle">🌙</button>
+      <button class="theme-toggle" id="theme-btn" aria-label="Toggle Theme">🌞</button>
     </header>
 
-    <!-- Mobile Optimized Form -->
-    <form id="todo-form" class="input-box">
-      <input type="text" id="task-input" placeholder="What needs to be done?" autocomplete="off" required />
-      <div class="form-row">
-        <select id="priority-select">
-          <option value="low">Low Priority</option>
-          <option value="medium" selected>Medium Priority</option>
-          <option value="high">High Priority</option>
-        </select>
-        <button type="submit" class="btn-add">Add Task</button>
+    <!-- Progress Component -->
+    <div class="glass progress-panel">
+      <div class="progress-header">
+        <span>Execution Progress</span>
+        <span id="progress-text">0%</span>
       </div>
-    </form>
-
-    <!-- Segmented Control Filters -->
-    <div class="filters">
-      <div class="filter-group">
-        <button class="filter-btn active" data-filter="all">All</button>
-        <button class="filter-btn" data-filter="active">Active</button>
-        <button class="filter-btn" data-filter="completed">Done</button>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill"></div>
       </div>
     </div>
 
+    <!-- Task Creation Form -->
+    <form class="glass input-panel" id="task-form">
+      <input type="text" id="task-input" class="task-input" placeholder="Initialize new task..." autocomplete="off" required>
+      <div class="input-row">
+        <select id="priority-select" class="priority-select">
+          <option value="low">Low Priority</option>
+          <option value="medium" selected>Medium Priority</option>
+          <option value="high">Critical Priority</option>
+        </select>
+        <button type="submit" class="btn-add">Deploy</button>
+      </div>
+    </form>
+
+    <!-- Filters -->
+    <div class="glass filters" id="filters">
+      <button type="button" class="filter-btn active" data-filter="all">All</button>
+      <button type="button" class="filter-btn" data-filter="active">Active</button>
+      <button type="button" class="filter-btn" data-filter="done">Completed</button>
+    </div>
+
+    <!-- Task List -->
     <ul class="task-list" id="task-list"></ul>
-    <div id="empty-state" class="empty-state" style="display: none;">You have no tasks in this view.</div>
+    
+    <div id="empty-state" class="empty-state" style="display: none;">
+      All systems clear. Pipeline is empty.
+    </div>
+
   </div>
 
   <script>
-    // --- Theme Management ---
-    const themeToggle = document.getElementById('theme-toggle');
+    /**
+     * TaskGrid - Core Logic
+     * Written in Vanilla JS. No dependencies.
+     */
+
+    // --- State Management ---
+    const STORAGE_KEY = 'taskgrid_v1';
+    let tasks = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    let currentFilter = 'all';
+
+    // --- DOM Elements ---
+    const form = document.getElementById('task-form');
+    const input = document.getElementById('task-input');
+    const prioritySelect = document.getElementById('priority-select');
+    const list = document.getElementById('task-list');
+    const emptyState = document.getElementById('empty-state');
+    const progressFill = document.getElementById('progress-fill');
+    const progressText = document.getElementById('progress-text');
+    const filterContainer = document.getElementById('filters');
+    const themeBtn = document.getElementById('theme-btn');
     const htmlEl = document.documentElement;
-    
-    // Load saved theme or default to dark
+
+    // --- Theming ---
     const savedTheme = localStorage.getItem('taskgrid_theme') || 'dark';
     htmlEl.setAttribute('data-theme', savedTheme);
-    updateThemeIcon(savedTheme);
+    themeBtn.textContent = savedTheme === 'dark' ? '🌞' : '🌙';
 
-    themeToggle.addEventListener('click', () => {
-      const currentTheme = htmlEl.getAttribute('data-theme');
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    themeBtn.addEventListener('click', () => {
+      const isDark = htmlEl.getAttribute('data-theme') === 'dark';
+      const newTheme = isDark ? 'light' : 'dark';
       htmlEl.setAttribute('data-theme', newTheme);
       localStorage.setItem('taskgrid_theme', newTheme);
-      updateThemeIcon(newTheme);
+      themeBtn.textContent = newTheme === 'dark' ? '🌞' : '🌙';
     });
 
-    function updateThemeIcon(theme) {
-      themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
-    }
+    // --- Helpers ---
+    const save = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+    
+    // XSS Prevention
+    const escapeHtml = (unsafe) => {
+      return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    };
 
-    // --- Task Management ---
-    const STORAGE_KEY = "taskgrid_items";
-    let tasks = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-    let currentFilter = "all";
-
-    const form = document.getElementById("todo-form");
-    const input = document.getElementById("task-input");
-    const prioritySelect = document.getElementById("priority-select");
-    const list = document.getElementById("task-list");
-    const emptyState = document.getElementById("empty-state");
-    const filterButtons = document.querySelectorAll(".filter-btn");
-
-    function saveTasks() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
-      render();
-    }
-
-    function render() {
-      list.innerHTML = "";
-
-      const filtered = tasks.filter((t) => {
-        if (currentFilter === "active") return !t.completed;
-        if (currentFilter === "completed") return t.completed;
+    // --- Rendering Pipeline ---
+    const render = () => {
+      list.innerHTML = '';
+      
+      const filtered = tasks.filter(t => {
+        if (currentFilter === 'active') return !t.completed;
+        if (currentFilter === 'done') return t.completed;
         return true;
       });
 
-      emptyState.style.display = filtered.length === 0 ? "block" : "none";
+      emptyState.style.display = filtered.length === 0 ? 'block' : 'none';
 
-      filtered.forEach((task) => {
-        const li = document.createElement("li");
-        li.className = `task-item ${task.completed ? "completed" : ""}`;
+      filtered.forEach(task => {
+        const li = document.createElement('li');
+        li.className = `task-item`;
+        li.dataset.id = task.id;
 
         li.innerHTML = `
-          <div class="task-content">
-            <input type="checkbox" ${task.completed ? "checked" : ""} data-id="${task.id}" />
-            <span class="task-title">${escapeHtml(task.title)}</span>
+          <div class="task-delete-bg">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
           </div>
-          <div class="task-meta">
-            <span class="priority-badge priority-${task.priority}">${task.priority}</span>
-            <button class="btn-delete" data-id="${task.id}">Delete</button>
+          <div class="glass task-foreground ${task.completed ? 'completed' : ''}">
+            <input type="checkbox" class="custom-checkbox" ${task.completed ? 'checked' : ''}>
+            <span class="task-title" title="Double tap to edit">${escapeHtml(task.title)}</span>
+            <span class="badge badge-${task.priority}">${task.priority}</span>
+            <button class="btn-delete-desktop">✕</button>
           </div>
         `;
         list.appendChild(li);
       });
-    }
 
-    function escapeHtml(str) {
-      return str.replace(/[&<>'"]/g, 
-        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-      );
-    }
+      updateProgress();
+    };
 
-    form.addEventListener("submit", (e) => {
+    const updateProgress = () => {
+      const total = tasks.length;
+      const completed = tasks.filter(t => t.completed).length;
+      const percentage = total === 0 ? 0 : Math.round((completed / total) * 100);
+      
+      progressFill.style.width = `${percentage}%`;
+      progressText.textContent = `${percentage}%`;
+    };
+
+    // --- Actions ---
+    form.addEventListener('submit', e => {
       e.preventDefault();
       const title = input.value.trim();
       if (!title) return;
 
-      tasks.unshift({ // Add new tasks to the top
-        id: Date.now().toString(),
+      const newTask = {
+        id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
         title,
         priority: prioritySelect.value,
         completed: false,
-      });
+        createdAt: Date.now()
+      };
 
-      input.value = "";
-      // Keep mobile keyboard open for rapid entry by refocusing (optional)
-      // input.focus(); 
-      saveTasks();
+      tasks.unshift(newTask); // Prepend to top
+      save();
+      input.value = '';
+      input.blur(); // Hide keyboard on mobile
+      render();
     });
 
-    list.addEventListener("click", (e) => {
-      const id = e.target.getAttribute("data-id");
-      if (!id) return;
+    const deleteTask = (id, liElement) => {
+      if (liElement) {
+        // Animate out
+        liElement.classList.add('fade-out');
+        liElement.style.transition = 'all 0.3s ease';
+        setTimeout(() => {
+          tasks = tasks.filter(t => t.id !== id);
+          save();
+          render();
+        }, 300);
+      } else {
+        tasks = tasks.filter(t => t.id !== id);
+        save();
+        render();
+      }
+    };
 
-      if (e.target.type === "checkbox") {
-        tasks = tasks.map((t) => (t.id === id ? { ...t, completed: e.target.checked } : t));
-        saveTasks();
-      } else if (e.target.classList.contains("btn-delete")) {
-        tasks = tasks.filter((t) => t.id !== id);
-        saveTasks();
+    // --- Event Delegation (Click, Double Click) ---
+    list.addEventListener('click', e => {
+      const li = e.target.closest('.task-item');
+      if (!li) return;
+      const id = li.dataset.id;
+
+      // Handle Checkbox
+      if (e.target.classList.contains('custom-checkbox')) {
+        const task = tasks.find(t => t.id === id);
+        task.completed = e.target.checked;
+        save();
+        render();
+      }
+
+      // Handle Desktop Delete Button
+      if (e.target.classList.contains('btn-delete-desktop')) {
+        deleteTask(id, li);
       }
     });
 
-    filterButtons.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        filterButtons.forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        currentFilter = btn.getAttribute("data-filter");
-        render();
-      });
+    // Inline Editing (Double Click / Double Tap)
+    list.addEventListener('dblclick', e => {
+      if (e.target.classList.contains('task-title')) {
+        const li = e.target.closest('.task-item');
+        const id = li.dataset.id;
+        const task = tasks.find(t => t.id === id);
+        
+        const inputEdit = document.createElement('input');
+        inputEdit.type = 'text';
+        inputEdit.value = task.title;
+        inputEdit.className = 'inline-edit-input';
+        
+        e.target.replaceWith(inputEdit);
+        inputEdit.focus();
+        
+        // Move cursor to end
+        const val = inputEdit.value;
+        inputEdit.value = '';
+        inputEdit.value = val;
+
+        const finalizeEdit = () => {
+          const newTitle = inputEdit.value.trim();
+          if (newTitle && newTitle !== task.title) {
+            task.title = newTitle;
+            save();
+          }
+          render();
+        };
+
+        inputEdit.addEventListener('blur', finalizeEdit);
+        inputEdit.addEventListener('keypress', ev => {
+          if (ev.key === 'Enter') {
+            inputEdit.blur();
+          }
+        });
+      }
     });
 
+    // --- Mobile Swipe-to-Delete Implementation ---
+    let startX = 0;
+    let currentX = 0;
+    let swipingElement = null;
+
+    list.addEventListener('touchstart', e => {
+      const target = e.target.closest('.task-foreground');
+      if (!target) return;
+      
+      startX = e.touches[0].clientX;
+      swipingElement = target;
+      // Remove transition for 1:1 finger tracking
+      swipingElement.style.transition = 'none';
+    }, { passive: true });
+
+    list.addEventListener('touchmove', e => {
+      if (!swipingElement) return;
+      currentX = e.touches[0].clientX;
+      const deltaX = currentX - startX;
+      
+      // Only allow swiping to the left
+      if (deltaX < 0) {
+        swipingElement.style.transform = `translate3d(${deltaX}px, 0, 0)`;
+      }
+    }, { passive: true });
+
+    list.addEventListener('touchend', e => {
+      if (!swipingElement) return;
+      const deltaX = currentX - startX;
+      const li = swipingElement.closest('.task-item');
+      const id = li.dataset.id;
+      
+      // Restore smooth transition
+      swipingElement.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease';
+      
+      // Threshold for deletion: 80px swipe
+      if (deltaX < -80) {
+        swipingElement.style.transform = `translate3d(-100%, 0, 0)`;
+        swipingElement.style.opacity = '0';
+        
+        setTimeout(() => {
+          deleteTask(id, li);
+        }, 300);
+      } else {
+        // Snap back to original position
+        swipingElement.style.transform = `translate3d(0, 0, 0)`;
+      }
+      
+      swipingElement = null;
+    });
+
+    // --- Filtering ---
+    filterContainer.addEventListener('click', e => {
+      if (e.target.classList.contains('filter-btn')) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        currentFilter = e.target.dataset.filter;
+        render();
+      }
+    });
+
+    // --- Init ---
     render();
+
+    // --- PWA Service Worker Registration ---
+    /* 
+      To make this fully installable, ensure you have:
+      1. A manifest.json file
+      2. A sw.js file (Service Worker) 
+      in the same root directory.
+    */
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('TaskGrid SW Registered:', reg.scope))
+          .catch(err => console.error('TaskGrid SW Failed:', err));
+      });
+    }
   </script>
 </body>
 </html>
