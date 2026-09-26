@@ -66,17 +66,95 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    body {
-      background: var(--bg-gradient);
-      background-attachment: fixed;
-      color: var(--text-main);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      padding: 24px 16px 80px 16px;
-      transition: background 0.4s ease, color 0.4s ease;
-      overflow-x: hidden;
-    }
+    /* --- Ambient Animated Glow Layer --- */
+body {
+  background: var(--bg-gradient);
+  background-attachment: fixed;
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 24px 16px 80px 16px;
+  transition: color 0.4s ease;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Floating ambient light blobs */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.45;
+  will-change: transform;
+}
+
+/* Cyan/Blue ambient orb */
+body::before {
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, var(--accent-cyan) 0%, transparent 70%);
+  top: -60px;
+  left: -80px;
+  animation: floatAmbientOne 18s ease-in-out infinite alternate;
+}
+
+/* Purple/Pink ambient orb */
+body::after {
+  width: 360px;
+  height: 360px;
+  background: radial-gradient(circle, var(--accent-pink) 0%, transparent 70%);
+  bottom: 5%;
+  right: -100px;
+  animation: floatAmbientTwo 22s ease-in-out infinite alternate;
+}
+
+/* Light mode softens the glow opacity */
+[data-theme="light"] body::before,
+[data-theme="light"] body::after {
+  opacity: 0.25;
+}
+
+/* Ensure the app stays above the glow layer */
+.app-container {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Ambient Floating Keyframes */
+@keyframes floatAmbientOne {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(90px, 140px, 0) scale(1.15);
+  }
+  100% {
+    transform: translate3d(30px, 280px, 0) scale(0.95);
+  }
+}
+
+@keyframes floatAmbientTwo {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-100px, -120px, 0) scale(1.2);
+  }
+  100% {
+    transform: translate3d(-40px, -240px, 0) scale(0.9);
+  }
+}
+
 
     /* ----------------------------------
        LAYOUT & UTILITIES
