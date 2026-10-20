@@ -1,4 +1,6 @@
-const CACHE_NAME = "taskgrid-cache-v1";
+// Bumped the version so browsers fetch the new professional design
+const CACHE_NAME = "taskgrid-pro-cache-v1"; 
+
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",
