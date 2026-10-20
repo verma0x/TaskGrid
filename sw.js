@@ -1,5 +1,5 @@
-// Changed the cache name to v2 to force the browser to download the new UI
-const CACHE_NAME = "taskgrid-saas-cache-v2"; 
+// Change v2 to v3
+const CACHE_NAME = "taskgrid-saas-cache-v3"; 
 
 const ASSETS_TO_CACHE = [
   "./",
