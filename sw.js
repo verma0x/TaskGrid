@@ -1,5 +1,5 @@
-// Bumped the version so browsers fetch the new professional design
-const CACHE_NAME = "taskgrid-pro-cache-v1"; 
+// Changed the cache name to v2 to force the browser to download the new UI
+const CACHE_NAME = "taskgrid-saas-cache-v2"; 
 
 const ASSETS_TO_CACHE = [
   "./",
